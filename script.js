@@ -73,15 +73,44 @@ Node.prototype.updateWorldMatrix = function(matrix) {
 };
 
 
-
+function updatePosition(index) {
+        return function(event, ui) {
+            trans[index] = ui.value;
+            // drawScene();
+        };
+    }
 function main() {
   // Get A WebGL context
   /** @type {HTMLCanvasElement} */
   var canvas = document.querySelector("#canvas");
   var gl = canvas.getContext("webgl2");
+  var teste = document.getElementById('x');
+
+  // Create a buffer
+
   if (!gl) {
     return;
   }
+
+  var program = webglUtils.createProgramFromSources(gl,
+        [vs, fs]);
+
+    // look up where the vertex data needs to go.
+  var positionAttributeLocation = gl.getAttribLocation(program, "a_position");
+  var trans = [0, 0];
+    // look up uniform locations
+  var positionBuffer = gl.createBuffer();
+    //Create a vertex array object (attribute state)
+  var vao = gl.createVertexArray();
+    //
+    // and make it the one we're currently working with
+     gl.bindVertexArray(vao);
+    //
+    // Turn on the attribute
+    gl.enableVertexAttribArray(positionAttributeLocation);
+    //
+    // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
   // Tell the twgl to match position with a_position, n
   // normal with a_normal etc..
@@ -169,7 +198,8 @@ function main() {
     earthNode.drawInfo,
     moonNode.drawInfo,
   ];
-
+  webglLessonsUI.setupSlider("#x", {slide: updatePosition(0), max: gl.canvas.width });
+  webglLessonsUI.setupSlider("#y", {slide: updatePosition(1), max: gl.canvas.height});
   requestAnimationFrame(drawScene);
 
   // Draw the scene.
@@ -193,11 +223,14 @@ function main() {
     var projectionMatrix =
         m4.perspective(fieldOfViewRadians, aspect, 1, 2000);
 
+
     // Compute the camera's matrix using look at.
-   
-    var cameraPosition = [0+(-10*time), -200+(10*time), 0];
-    
-    
+
+    var valueX = document.querySelector('#x .gman-widget-value').textContent;
+    var valueY = document.querySelector('#y .gman-widget-value').textContent;
+    var cameraPosition = [0, -200-((2*(valueX+1))/10), 0];
+
+
     var target = [0, 0, 0];
     var up = [0, 0, 1];
     var cameraMatrix = m4.lookAt(cameraPosition, target, up);
@@ -226,9 +259,8 @@ function main() {
     });
 
     // ------ Draw the objects --------
-
     twgl.drawObjectList(gl, objectsToDraw);
-    
+    updatePosition(0)
     requestAnimationFrame(drawScene);
   }
 }
