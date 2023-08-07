@@ -1,5 +1,5 @@
 "use strict";
-
+//testt
 var vs = `#version 300 es
 
 in vec4 a_position;
@@ -136,7 +136,7 @@ function main() {
   var solarSystemNode = new Node();
   var earthOrbitNode = new Node();
   // earth orbit 100 units from the sun
-  earthOrbitNode.localMatrix = m4.translation(100, 15, 0);
+  earthOrbitNode.localMatrix = m4.translation(100, 20, 0);
 
   var moonOrbitNode = new Node();
   // moon 20 units from the earth
