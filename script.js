@@ -92,6 +92,16 @@ function main() {
     return;
   }
 
+  const data = {
+    tolerance: 0.15,
+    distance: .4,
+    divisions: 16,
+    startAngle: 0,
+    endAngle: Math.PI * 2,
+    capStart: true,
+    capEnd: true,
+  };
+
   var program = webglUtils.createProgramFromSources(gl,
         [vs, fs]);
 
@@ -193,6 +203,22 @@ function main() {
     moonNode,
   ];
 
+  var vxs = {
+    A: [-3.9572638070319, -0.5319449764398],
+    B: [-4, 1],
+    C: [2, 1],
+    D: [1, -2],
+    E: [0.5653170060827,-3.821094658705],
+    F: [-2.9618632452938,-4.1889600836952],
+    G: [-1.2307318335753,-6.3745134909898],
+    H: [0, -8],
+    I: [4, -6],
+    J: [5, -4],
+    K: [5.3692066736016,-1.440788967592],
+    L: [3.5515186912972,-1.2027583984807],
+    M: [3.9843015442268,1.0477124367534]
+};
+
   var objectsToDraw = [
     sunNode.drawInfo,
     earthNode.drawInfo,
@@ -228,10 +254,10 @@ function main() {
 
     var valueX = document.querySelector('#x .gman-widget-value').textContent;
     var valueY = document.querySelector('#y .gman-widget-value').textContent;
-    var cameraPosition = [0, -200-((2*(valueX+1))/10), 0];
+    var cameraPosition = [0-((2*(valueY+1))/10), -200-((2*(valueX+1))/10), 0];
 
 
-    var target = [0, 0, 0];
+    var target = [100, 100, 0];
     var up = [0, 0, 1];
     var cameraMatrix = m4.lookAt(cameraPosition, target, up);
 
