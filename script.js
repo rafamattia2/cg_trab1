@@ -203,6 +203,7 @@ function main() {
     moonNode,
   ];
 
+  var slidersBuffer = {x : 0, y: 0};
   var vxs = {
     A: [-3.9572638070319, -0.5319449764398],
     B: [-4, 1],
@@ -216,16 +217,51 @@ function main() {
     J: [5, -4],
     K: [5.3692066736016,-1.440788967592],
     L: [3.5515186912972,-1.2027583984807],
-    M: [3.9843015442268,1.0477124367534]
-};
+    M: [3.9843015442268,1.0477124367534],
+    
+  };  
+  
+  var vxsCurves = {
+    firstCurve : [vxs.A, vxs.B, vxs.C, vxs.D],
+    secondCurve : [vxs.D, vxs.E, vxs.F, vxs.G],
+    thirdCurve : [vxs.G, vxs.H, vxs.I, vxs.J],
+    fourthCurve : [vxs.J, vxs.K, vxs.L, vxs.M]
+  };
+
+  function calculateIntermediateVertex(v1, v2, sliderValue) {
+    const v1v2t = {
+      x: v1.x + sliderValue * (v2.x - v1.x),
+      y: v1.y + sliderValue * (v2.y - v1.y)
+    };
+    console.log("soma: " + v1v2t)
+    let arr =[v1v2t[0], v1v2t[1]]
+    console.log("arr:" + arr);
+    return arr;
+  }
+
+  function calculateIntermediateInArray(currentArray){
+    let arrayBuffer = []
+    //Calcula a posição da câmera na curva
+    if (currentArray.length !== 1){
+      for (let i = 0; i < currentArray.length-1; i++){
+        // console.log("testeee: "+currentArray[i] + currentArray[i+1]) ||| ATÉ AQUI TA CERTO ( a principio kakakak)
+        let intermediateVertex = calculateIntermediateVertex(currentArray[i] + currentArray[i+1], slidersBuffer.x);
+        arrayBuffer.push(intermediateVertex);
+      }
+      return calculateIntermediateInArray(arrayBuffer);
+    }else{
+      return currentArray;
+    }
+  }
 
   var objectsToDraw = [
     sunNode.drawInfo,
     earthNode.drawInfo,
     moonNode.drawInfo,
   ];
-  webglLessonsUI.setupSlider("#x", {slide: updatePosition(0), max: gl.canvas.width });
-  webglLessonsUI.setupSlider("#y", {slide: updatePosition(1), max: gl.canvas.height});
+  webglLessonsUI.setupSlider("#x", {slide: updatePosition(0),min: -(gl.canvas.width/2), max: gl.canvas.width/2});
+  webglLessonsUI.setupSlider("#y", {slide: updatePosition(1),min: -(gl.canvas.height/2), max: gl.canvas.height/2});
+
   requestAnimationFrame(drawScene);
 
   // Draw the scene.
@@ -249,15 +285,18 @@ function main() {
     var projectionMatrix =
         m4.perspective(fieldOfViewRadians, aspect, 1, 2000);
 
+    slidersBuffer.x = document.querySelector('#x .gman-widget-value').textContent;
+    slidersBuffer.y = document.querySelector('#y .gman-widget-value').textContent;
+
 
     // Compute the camera's matrix using look at.
+    //  console.log(vxsCurves.firstCurve);
+    // console.log(vxs.A);
+    // console.log(vxs.A * 2);
+    console.log(calculateIntermediateInArray(vxsCurves.firstCurve));
+    var cameraPosition = [0, -200, 0];
 
-    var valueX = document.querySelector('#x .gman-widget-value').textContent;
-    var valueY = document.querySelector('#y .gman-widget-value').textContent;
-    var cameraPosition = [0-((2*(valueY+1))/10), -200-((2*(valueX+1))/10), 0];
-
-
-    var target = [100, 100, 0];
+    var target = [0, 500, 0];
     var up = [0, 0, 1];
     var cameraMatrix = m4.lookAt(cameraPosition, target, up);
 
