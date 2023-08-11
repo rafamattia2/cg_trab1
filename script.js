@@ -206,10 +206,10 @@ function main() {
   var slidersBuffer = {x : 0, y: 0, z: 0, w: 0};
 
   var vxs = {
-    A: [-10, -5],
-    B: [-4, 1],
-    C: [2, 1],
-    D: [1, -2],
+    A: [-30, -20],
+    B: [-10.0514010330795,20.2472607123467],
+    C: [-30,-40],
+    D: [8.8249164557136,-0.0873938729456],
     E: [0.5653170060827,-3.821094658705],
     F: [-2.9618632452938,-4.1889600836952],
     G: [-1.2307318335753,-6.3745134909898],
@@ -230,14 +230,14 @@ function main() {
   };
 
   function calculateIntermediateVertex(v1, v2, sliderValue) {
-    console.log("v1: " + v1 + " v2: " + v2 + " Slider Value: " + sliderValue);
+    // console.log("v1: " + v1 + " v2: " + v2 + " Slider Value: " + sliderValue);
     // const x = v1.x + (sliderValue+1) * (v2.x - v1.x);
     // const y = v1.y + (sliderValue+1) * (v2.y - v1.y);
     const v1v2t = {
       x: v1[0] + (sliderValue*0.01) * (v2[0] - v1[0]),
       y: v1[1] + (sliderValue*0.01) * (v2[1] - v1[1])
     };
-    console.log("Resultado: " + v1v2t.x +" "+ v1v2t.y)
+    // console.log("Resultado: " + v1v2t.x +" "+ v1v2t.y)
     let arr =[v1v2t.x, v1v2t.y]
     // let arr =[x, y]
     // console.log("arr:" + arr);
@@ -251,12 +251,12 @@ function main() {
       for (let i = 0; i < currentArray.length-1; i++){
         // console.log("testeee: "+currentArray[i] + currentArray[i+1]) ||| ATÉ AQUI TA CERTO ( a principio kakakak)
         let intermediateVertex = calculateIntermediateVertex(currentArray[i], currentArray[i+1], slidersBuffer.w);
-        console.log("Intermediário: " + intermediateVertex);
+        // console.log("Intermediário: " + intermediateVertex);
         arrayBuffer.push(intermediateVertex);
       }
       return calculateIntermediateInArray(arrayBuffer);
     }else{
-      console.log("FINAL: " + currentArray);
+      console.log(currentArray);
       return currentArray;
     }
   }
@@ -307,16 +307,17 @@ function main() {
 
 
     // Compute the camera's matrix using look at.
-    //  console.log(vxsCurves.firstCurve);
-    // console.log(vxs.A);
-    // console.log(vxs.A * 2);
-    calculateIntermediateInArray(vxsCurves.firstCurve);
     var cameraPosition = [0-(10*slidersBuffer.x), -500-(10*slidersBuffer.z), 0-(10*slidersBuffer.y)];
     var cameraPositionBezier = calculateIntermediateInArray(vxsCurves.firstCurve);
+    cameraPositionBezier[0].push(-100);
+
+    console.log("Camera Position" + cameraPositionBezier);
     var target = [cameraPosition[0],-1+(10*slidersBuffer.w), cameraPosition[1]];
     var target2 = [0, 500, 0]
     var up = [0, 0, 1];
-    var cameraMatrix = m4.lookAt(cameraPosition, cameraPositionBezier, up);
+    var cameraMatrix = m4.lookAt(cameraPositionBezier[0],
+                                 cameraPosition,
+                                 up);
 
     // Make a view matrix from the camera matrix.
     var viewMatrix = m4.inverse(cameraMatrix);
