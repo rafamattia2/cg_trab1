@@ -153,7 +153,7 @@ function main() {
   moonOrbitNode.localMatrix = m4.translation(30, 3, 0);
 
   var sunNode = new Node();
-  sunNode.localMatrix = m4.scaling(5, 5, 5);  // sun a the center
+  sunNode.localMatrix = m4.scaling(-5, 5, 5);  // sun a the center
   sunNode.drawInfo = {
     uniforms: {
       u_colorOffset: [0.6, 0.6, 0, 1], // yellow
@@ -206,10 +206,10 @@ function main() {
   var slidersBuffer = {x : 0, y: 0, z: 0, w: 0};
 
   var vxs = {
-    A: [-30, -20],
-    B: [-10.0514010330795,20.2472607123467],
-    C: [-30,-40],
-    D: [8.8249164557136,-0.0873938729456],
+    A: [-380.884671371422,-140.0698245324645],
+    B: [-450.2055192201519,580.7875056290826],
+    C: [10.5387352999922,-280.919911862778],
+    D: [-90.5279256641409,510.8501957709694],
     E: [0.5653170060827,-3.821094658705],
     F: [-2.9618632452938,-4.1889600836952],
     G: [-1.2307318335753,-6.3745134909898],
@@ -270,10 +270,10 @@ function main() {
   // webglLessonsUI.setupSlider("#y", {slide: updatePosition(1), min: -(gl.canvas.height/2), max: gl.canvas.height/2});
   // webglLessonsUI.setupSlider("#z", {slide: updatePosition(2), max: gl.canvas.height});
   // webglLessonsUI.setupSlider("#w", {slide: updatePosition(3), max: gl.canvas.height});
-  webglLessonsUI.setupSlider("#x", {slide: updatePosition(0), min:-100, max: 100});
-  webglLessonsUI.setupSlider("#y", {slide: updatePosition(1), min:-100, max: 100});
-  webglLessonsUI.setupSlider("#z", {slide: updatePosition(2), min:-100, max: 100});
-  webglLessonsUI.setupSlider("#w", {slide: updatePosition(3), min:-100, max: 100});
+  webglLessonsUI.setupSlider("#x", {slide: updatePosition(0), min:-300, max: 300});
+  webglLessonsUI.setupSlider("#y", {slide: updatePosition(1), min:-300, max: 300});
+  webglLessonsUI.setupSlider("#z", {slide: updatePosition(2), min:-700, max: 300});
+  webglLessonsUI.setupSlider("#w", {slide: updatePosition(3), max: 100});
 
 
   requestAnimationFrame(drawScene);
@@ -307,7 +307,7 @@ function main() {
 
 
     // Compute the camera's matrix using look at.
-    var cameraPosition = [0-(10*slidersBuffer.x), -500-(10*slidersBuffer.z), 0-(10*slidersBuffer.y)];
+    var cameraPosition = [0-(10*slidersBuffer.x), -300-(1*slidersBuffer.y), 0-(10*slidersBuffer.z)];
     var cameraPositionBezier = calculateIntermediateInArray(vxsCurves.firstCurve);
     cameraPositionBezier[0].push(-100);
 
@@ -315,8 +315,8 @@ function main() {
     var target = [cameraPosition[0],-1+(10*slidersBuffer.w), cameraPosition[1]];
     var target2 = [0, 500, 0]
     var up = [0, 0, 1];
-    var cameraMatrix = m4.lookAt(cameraPositionBezier[0],
-                                 cameraPosition,
+    var cameraMatrix = m4.lookAt(cameraPosition,
+                                 target2,
                                  up);
 
     // Make a view matrix from the camera matrix.
