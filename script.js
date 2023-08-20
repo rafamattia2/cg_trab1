@@ -316,7 +316,7 @@ function main() {
     var target2 = [0, 500, 0]
     var up = [0, 0, 1];
     var cameraMatrix = m4.lookAt(cameraPosition,
-                                 target2,
+                                 cameraPositionBezier[0],
                                  up);
 
     // Make a view matrix from the camera matrix.
@@ -344,7 +344,7 @@ function main() {
 
     // ------ Draw the objects --------
     twgl.drawObjectList(gl, objectsToDraw);
-    updatePosition(0)
+    // updatePosition(0)
     requestAnimationFrame(drawScene);
   }
 }
