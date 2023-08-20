@@ -20,7 +20,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd C:\\Users\\rscnaa\\Downloads\\Compressed\\Blender Room\\Room #1\\TEXTURES\\Book Cover\\3.jpg
+map_Kd textures\\Book_Cover\\3.jpg
 
 newmtl BookPaper
 Ns 225.000000
@@ -41,8 +41,8 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Bump C:\\Users\\rscnaa\\Downloads\\Compressed\\Blender Room\\Room #1\\TEXTURES\\TV Cabinet\\Wood050_2K_Normal.jpg
-map_Kd C:\\Users\\rscnaa\\Downloads\\Compressed\\Blender Room\\Room #1\\TEXTURES\\TV Cabinet\\Wood050_2K_Color.jpg
+map_Bump textures\\TV_Cabinet\\Wood050_2K_Normal.jpg
+map_Kd textures\\TV_Cabinet\\Wood050_2K_Color.jpg
 
 newmtl DVD_Player
 Ns 0.000000
@@ -73,8 +73,8 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Bump -o 1.250000 0.200000 0.000000 -s 1.000000 2.500000 1.000000 C:\\Users\\rscnaa\\Downloads\\Compressed\\Blender Room\\Room #1\\TEXTURES\\Floor\\Wood051_2K_Normal.jpg
-map_Kd -o 1.250000 0.200000 0.000000 -s 1.000000 2.500000 1.000000 C:\\Users\\rscnaa\\Downloads\\Compressed\\Blender Room\\Room #1\\TEXTURES\\Floor\\Wood051_2K_Color.jpg
+map_Bump textures\\Floor\\Wood051_2K_Normal.jpg
+map_Kd textures\\Floor\\Wood051_2K_Color.jpg
 
 newmtl Guitar
 Ns 225.000000
@@ -85,8 +85,8 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd C:\\Users\\rscnaa\\Downloads\\Compressed\\Blender Room\\Room #1\\TEXTURES\\Guitar\\corpodif.jpg
-refl C:\\Users\\rscnaa\\Downloads\\Compressed\\Blender Room\\Room #1\\TEXTURES\\Guitar\\KC_outside_Xsm_blur.hdr
+map_Kd textures\\Guitar\\corpodif.jpg
+refl textures\\Guitar\\KC_outside_Xsm_blur.hdr
 
 newmtl JoystickLights
 Ns 323.999994
@@ -107,7 +107,6 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 3
-map_Kd camera-lens-icon.jpg
 
 newmtl Mat.6
 Ns 99.999988
@@ -208,7 +207,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 1
-map_Kd C:\\Users\\rscnaa\\Downloads\\Compressed\\Blender Room\\Room #1\\TEXTURES\\Remote\\dif.jpg
+map_Kd textures\\Remote\\dif.jpg
 
 newmtl Sofa
 Ns 323.999994
@@ -309,7 +308,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd C:\\Users\\rscnaa\\Downloads\\Compressed\\Blender Room\\Room #1\\TEXTURES\\Tea Table\\Wood.jpg
+map_Kd textures\\Tea_Table\\Wood.jpg
 
 newmtl Wall
 Ns 225.000000
@@ -330,7 +329,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd C:\\Users\\rscnaa\\Downloads\\Compressed\\Blender Room\\Room #1\\TEXTURES\\Wall Frame\\among us.jpg
+map_Kd textures\\Wall_Frame\\among us.jpg
 
 newmtl Water
 Ns 900.000000
@@ -361,7 +360,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd C:\\Users\\rscnaa\\Downloads\\Compressed\\Blender Room\\Room #1\\TEXTURES\\Indoor Plant\\gorshok.jpg
+map_Kd textures\\Indoor_Plant\\gorshok.jpg
 
 newmtl joystick
 Ns 143.999983
@@ -382,8 +381,8 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Bump C:\\Users\\rscnaa\\Downloads\\Compressed\\Blender Room\\Room #1\\TEXTURES\\Indoor Plant\\leaf_normal.jpg
-map_Kd C:\\Users\\rscnaa\\Downloads\\Compressed\\Blender Room\\Room #1\\TEXTURES\\Indoor Plant\\leaf.jpg
+map_Bump textures\\Indoor_Plant\\leaf_normal.jpg
+map_Kd textures\\Indoor_Plant\\leaf.jpg
 
 newmtl logodvd
 Ns 18.000005
@@ -404,7 +403,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd C:\\Users\\rscnaa\\Downloads\\Compressed\\Blender Room\\Room #1\\TEXTURES\\Indoor Plant\\moh.jpg
+map_Kd textures\\Indoor_Plant\\moh.jpg
 
 newmtl pesdvdpeq
 Ns 18.000005
@@ -425,8 +424,8 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Bump C:\\Users\\rscnaa\\Downloads\\Compressed\\Blender Room\\Room #1\\TEXTURES\\Indoor Plant\\sand_normal.jpg
-map_Kd C:\\Users\\rscnaa\\Downloads\\Compressed\\Blender Room\\Room #1\\TEXTURES\\Indoor Plant\\sand.jpg
+map_Bump textures\\Indoor_Plant\\sand_normal.jpg
+map_Kd textures\\Indoor_Plant\\sand.jpg
 
 newmtl stem
 Ns 272.250012
@@ -437,4 +436,4 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd C:\\Users\\rscnaa\\Downloads\\Compressed\\Blender Room\\Room #1\\TEXTURES\\Indoor Plant\\stem.jpg
+map_Kd textures\\Indoor_Plant\\stem.jpg

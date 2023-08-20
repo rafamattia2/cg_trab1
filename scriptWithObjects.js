@@ -386,7 +386,6 @@ async function main() {
   const mtlHref = "/objects/rooms/Room1.mtl";
   const matTexts = await Promise.all(obj.materialLibs.map(async filename => {
     const matHref = new URL(mtlHref, baseHref).href;
-    // const matHref = "/objects/dragonball/goku/Goku.mtl/";
     const response = await fetch(matHref);
     return await response.text();
   }));
@@ -530,11 +529,131 @@ async function main() {
   // Set zNear and zFar to something hopefully appropriate
   // for the size of this object.
   const zNear = radius / 100;
-  const zFar = radius * 3;
+  const zFar = radius * 300;
 
   function degToRad(deg) {
     return deg * Math.PI / 180;
   }
+
+  ////////// NEW /////////// NEW /////////// NEW /////////// NEW /////////// NEW /////////// NEW ///////////
+  var slidersBuffer = {x : 0, y: 0, z: 0, w: 0};
+
+  // XZY NO BLENDER
+  var vxs = {
+    A: [0, 0.7, 4],
+    B: [0.4, 1.3, 1.2],
+    C: [3.2, 0.4, 1.2],
+    D: [3.4, -1.3, -1.3],
+    E: [3.6 , -3 , -3.8],
+    F: [2.15535, 3.1862, -3.34297],
+    G: [-2.01541, 3.60272, -2.55326],
+    H: [0, -8],
+    I: [4, -6],
+    J: [5, -4],
+    K: [5.3692066736016,-1.440788967592],
+    L: [3.5515186912972,-1.2027583984807],
+    M: [3.9843015442268,1.0477124367534],
+
+  };
+
+  var vxsCurves = {
+    firstCurve : [vxs.A, vxs.B, vxs.C, vxs.D],
+    secondCurve : [vxs.D, vxs.E, vxs.F, vxs.G],
+    thirdCurve : [vxs.G, vxs.H, vxs.I, vxs.J],
+    fourthCurve : [vxs.J, vxs.K, vxs.L, vxs.M]
+  };
+  //Funções para vetores bidimensionais ////////////////////////////////
+  // function calculateIntermediateVertex(v1, v2, sliderValue) {
+  //   // console.log("v1: " + v1 + " v2: " + v2 + " Slider Value: " + sliderValue);
+  //   // const x = v1.x + (sliderValue+1) * (v2.x - v1.x);
+  //   // const y = v1.y + (sliderValue+1) * (v2.y - v1.y);
+  //   const v1v2t = {
+  //     x: v1[0] + (sliderValue*0.01) * (v2[0] - v1[0]),
+  //     y: v1[1] + (sliderValue*0.01) * (v2[1] - v1[1])
+  //   };
+  //   // console.log("Resultado: " + v1v2t.x +" "+ v1v2t.y)
+  //   let arr =[v1v2t.x, v1v2t.y]
+  //   // let arr =[x, y]
+  //   // console.log("arr:" + arr);
+  //   return arr;
+  // }
+  //
+  // function calculateIntermediateInArray(currentArray){
+  //   let arrayBuffer = []
+  //   //Calcula a posição da câmera na curva
+  //   if (currentArray.length !== 1){
+  //     for (let i = 0; i < currentArray.length-1; i++){
+  //       // console.log("testeee: "+currentArray[i] + currentArray[i+1]) ||| ATÉ AQUI TA CERTO ( a principio kakakak)
+  //       let intermediateVertex = calculateIntermediateVertex(currentArray[i], currentArray[i+1], slidersBuffer.w);
+  //       // console.log("Intermediário: " + intermediateVertex);
+  //       arrayBuffer.push(intermediateVertex);
+  //     }
+  //     return calculateIntermediateInArray(arrayBuffer);
+  //   }else{
+  //     //console.log(currentArray);
+  //     return currentArray;
+  //   }
+  // }
+
+  //Funções para vetores tridimensionais ////////////////////////////////
+  function calculateIntermediateVertex(v1, v2, t) {   //calcula o centro entre dois vetores, dado um parâmetro t
+    if(t === 1){
+      t -= 0.001
+    }
+    const v1v2t = [
+      v1[0] + t * (v2[0] - v1[0]),
+      v1[1] + t * (v2[1] - v1[1]),
+      v1[2] + t * (v2[2] - v1[2])
+    ];
+    return v1v2t;
+  }
+
+  function calculateIntermediateInArray(currentArray, t, tg) { // Calcula os novos vetores
+    let arrayBuffer = [];
+    if (currentArray.length !== 1) {
+      for (let i = 0; i < currentArray.length - 1; i++) {
+        tg = currentArray[i+1];                                         // A tangente é um dos vetores utilizados para calcular o ponto médio entre dois vetores
+        let intermediateVertex = calculateIntermediateVertex(
+            currentArray[i],
+            currentArray[i + 1],
+            t*4
+        );
+        arrayBuffer.push(intermediateVertex);
+      }
+      return calculateIntermediateInArray(arrayBuffer, t, tg);
+    } else {
+      return {currentArray, tg};
+    }
+  }
+
+  function calculateEachCurve(){
+    let value = slidersBuffer.w;
+    let result = [];
+    if (value <= 0.25){
+      result = calculateIntermediateInArray(vxsCurves.firstCurve, slidersBuffer.w);
+    }else if(value > 0.25 && value <=0.5){
+      result = calculateIntermediateInArray(vxsCurves.secondCurve, slidersBuffer.w-0.25);
+    }else if(value > 0.5 && value <=0.75){
+      result = calculateIntermediateInArray(vxsCurves.thirdCurve, slidersBuffer.w-0.5);
+    }else{
+      result = calculateIntermediateInArray(vxsCurves.fourthCurve, slidersBuffer.w-0.75);
+    }
+    return result;
+  }
+
+  var trans = [0, 0];
+  function updatePosition(index) {
+    return function(event, ui) {
+      trans[index] = ui.value;
+      // drawScene();
+    };
+  }
+  webglLessonsUI.setupSlider("#x", {slide: updatePosition(0), min: -100, max: 100});
+  webglLessonsUI.setupSlider("#y", {slide: updatePosition(1), min: -100, max: 100});
+  webglLessonsUI.setupSlider("#z", {slide: updatePosition(2), min: -100, max: 100});
+  // webglLessonsUI.setupSlider("#w", {slide: updatePosition(3), max: 400});
+  webglLessonsUI.setupSlider("#w", {slide: updatePosition(3), max: 1, step: 0.001, precision: 4});
+  webglLessonsUI.setupSlider("#r", {slide: updatePosition(4), max: 100});
 
   function render(time) {
     time *= 0.001;  // convert to seconds
@@ -547,10 +666,15 @@ async function main() {
     const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
     const projection = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
 
+    // var bezierCurve = calculateIntermediateInArray(vxsCurves.firstCurve);
+    var bezierCurve = calculateEachCurve();
+    let cameraPosition = bezierCurve.currentArray;
+    let cameraPositionTest = [cameraPosition[0][0]+(10*slidersBuffer.x), cameraPosition[0][1]+(10*slidersBuffer.y),cameraPosition[0][2]+(10*slidersBuffer.z)];
+    let cameraTg = bezierCurve.tg;
+    let cameraTgTest = [cameraPositionTest[0], cameraPositionTest[1], cameraPositionTest[2]+1]
     const up = [0, 1, 0];
     // Compute the camera's matrix using look at.
-    const camera = m4.lookAt(cameraPosition, cameraTarget, up);
-
+    const camera = m4.lookAt(cameraPosition[0], cameraTg, up);
     // Make a view matrix from the camera matrix.
     const view = m4.inverse(camera);
 
@@ -561,14 +685,21 @@ async function main() {
       u_viewWorldPosition: cameraPosition,
     };
 
+    slidersBuffer.x = document.querySelector('#x .gman-widget-value').textContent;
+    slidersBuffer.y = document.querySelector('#y .gman-widget-value').textContent;
+    slidersBuffer.z = document.querySelector('#z .gman-widget-value').textContent;
+    slidersBuffer.w = document.querySelector('#w .gman-widget-value').textContent;
+    slidersBuffer.r = document.querySelector('#r .gman-widget-value').textContent;
+
     gl.useProgram(meshProgramInfo.program);
 
     // calls gl.uniform
     twgl.setUniforms(meshProgramInfo, sharedUniforms);
 
+
     // compute the world matrix once since all parts
     // are at the same space.
-    let u_world = m4.yRotation(time);
+    let u_world = m4.yRotation((slidersBuffer.r)/360);
     u_world = m4.translate(u_world, ...objOffset);
 
     for (const {bufferInfo, vao, material} of parts) {
