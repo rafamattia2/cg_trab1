@@ -411,6 +411,36 @@ async function main() {
         });
   }
 
+  const secondObjHref = "/objects/jet/jet.obj";
+  const secondResponse = await fetch(secondObjHref);
+  const secondText = await secondResponse.text();
+  const secondObj = parseOBJ(secondText);
+  const secondBaseHref = new URL(secondObjHref, window.location.href);
+  const secondMtlHref = "/objects/jet/jet.mtl";
+  const secondMatTexts = await Promise.all(
+      secondObj.materialLibs.map(async filename => {
+        const matHref = new URL(secondMtlHref, secondBaseHref).href;
+        const response = await fetch(matHref);
+        return await response.text();
+  }));
+
+  const secondMaterials = parseMTL(secondMatTexts.join('\n'));
+
+  // load texture for materials
+  for (const material of Object.values(secondMaterials)) {
+    Object.entries(material)
+        .filter(([key]) => key.endsWith('Map'))
+        .forEach(([key, filename]) => {
+          let texture = textures[filename];
+          if (!texture) {
+            const textureHref = new URL(filename, secondBaseHref).href;
+            texture = twgl.createTexture(gl, {src: textureHref, flipY: true});
+            textures[filename] = texture;
+          }
+          material[key] = texture;
+        });
+  }
+
   // hack the materials so we can see the specular map
   Object.values(materials).forEach(m => {
     m.shininess = 25;
@@ -483,6 +513,62 @@ async function main() {
     };
   });
 
+
+  const secondParts = secondObj.geometries.map(({material, data}) => {
+    // Because data is just named arrays like this
+    //
+    // {
+    //   position: [...],
+    //   texcoord: [...],
+    //   normal: [...],
+    // }
+    //
+    // and because those names match the attributes in our vertex
+    // shader we can pass it directly into `createBufferInfoFromArrays`
+    // from the article "less code more fun".
+
+    if (data.color) {
+      if (data.position.length === data.color.length) {
+        // it's 3. The our helper library assumes 4 so we need
+        // to tell it there are only 3.
+        data.color = { numComponents: 3, data: data.color };
+      }
+    } else {
+      // there are no vertex colors so just use constant white
+      data.color = { value: [1, 1, 1, 1] };
+    }
+
+    // generate tangents if we have the data to do so.
+    if (data.texcoord && data.normal) {
+      data.tangent = generateTangents(data.position, data.texcoord);
+    } else {
+      // There are no tangents
+      data.tangent = { value: [1, 0, 0] };
+    }
+
+    if (!data.texcoord) {
+      data.texcoord = { value: [0, 0] };
+    }
+
+    if (!data.normal) {
+      // we probably want to generate normals if there are none
+      data.normal = { value: [0, 0, 1] };
+    }
+
+    // create a buffer for each array by calling
+    // gl.createBuffer, gl.bindBuffer, gl.bufferData
+    const bufferInfo = twgl.createBufferInfoFromArrays(gl, data);
+    const vao = twgl.createVAOFromBufferInfo(gl, meshProgramInfo, bufferInfo);
+    return {
+      material: {
+        ...defaultMaterial,
+        ...secondMaterials[material],
+      },
+      bufferInfo,
+      vao,
+    };
+  });
+
   function getExtents(positions) {
     const min = positions.slice(0, 3);
     const max = positions.slice(0, 3);
@@ -528,8 +614,9 @@ async function main() {
   ]);
   // Set zNear and zFar to something hopefully appropriate
   // for the size of this object.
-  const zNear = radius / 100;
-  const zFar = radius * 300;
+  // const zNear = radius / 100;
+  const zNear = 0.001;
+  const zFar = 10000;
 
   function degToRad(deg) {
     return deg * Math.PI / 180;
@@ -540,19 +627,19 @@ async function main() {
 
   // XZY NO BLENDER
   var vxs = {
-    A: [0, 0.7, 4],
+    A: [0, 0.7, 7],
     B: [0.4, 1.3, 1.2],
     C: [3.2, 0.4, 1.2],
     D: [3.4, -1.3, -1.3],
-    E: [3.6 , -3 , -3.8],
-    F: [2.15535, 3.1862, -3.34297],
-    G: [-2.01541, 3.60272, -2.55326],
-    H: [0, -8],
-    I: [4, -6],
-    J: [5, -4],
-    K: [5.3692066736016,-1.440788967592],
-    L: [3.5515186912972,-1.2027583984807],
-    M: [3.9843015442268,1.0477124367534],
+    E: [3.6 , -3, -3.8],
+    F: [3.27, 0.91, -2.74],
+    G: [1.03, -0.15, -3.02],
+    H: [-1.21, -1.21, -3.3],
+    I: [-2, -3.5, -0.77894],
+    J: [-3, -1.8, -3],
+    K: [-4, -0.1, -5.22106],
+    L: [-1.79528, 15.4649, 15.0546],
+    M: [-0.610376, 6.00695, 4.75389],
 
   };
 
@@ -598,8 +685,9 @@ async function main() {
   //Funções para vetores tridimensionais ////////////////////////////////
   function calculateIntermediateVertex(v1, v2, t) {   //calcula o centro entre dois vetores, dado um parâmetro t
     if(t === 1){
-      t -= 0.001
+      t = 0.999;
     }
+
     const v1v2t = [
       v1[0] + t * (v2[0] - v1[0]),
       v1[1] + t * (v2[1] - v1[1]),
@@ -654,6 +742,8 @@ async function main() {
   // webglLessonsUI.setupSlider("#w", {slide: updatePosition(3), max: 400});
   webglLessonsUI.setupSlider("#w", {slide: updatePosition(3), max: 1, step: 0.001, precision: 4});
   webglLessonsUI.setupSlider("#r", {slide: updatePosition(4), max: 100});
+
+  let secondObjectTime = 0;
 
   function render(time) {
     time *= 0.001;  // convert to seconds
@@ -710,6 +800,28 @@ async function main() {
         u_world,
       }, material);
       // calls gl.drawArrays or gl.drawElements
+      twgl.drawBufferInfo(gl, bufferInfo);''
+    }
+
+    secondObjectTime += 0.01;
+
+    // RENDERIZA O SEGUNDO OBJETO
+    for (const { bufferInfo, vao, material } of secondParts) {
+      const scaledUWorld = m4.scale(u_world, 0.005, 0.005, 0.005);
+      const xOffset = Math.sin(secondObjectTime) * 1000 * slidersBuffer.w;
+      const initialX = -130; // Coloque um valor aqui para ajustar a posição ao longo do eixo X
+      const initialY = 2000; // Coloque um valor aqui para ajustar a posição ao longo do eixo Y
+      // const initialZ = 0; // Coloque um valor aqui para ajustar a posição ao longo do eixo Z
+
+      const translatedUWorld = m4.translate(scaledUWorld, initialX, initialY, xOffset);
+      gl.bindVertexArray(vao);
+      twgl.setUniforms(
+          meshProgramInfo,
+          {
+            u_world: translatedUWorld,
+          },
+          material
+      );
       twgl.drawBufferInfo(gl, bufferInfo);
     }
 
